@@ -153,6 +153,13 @@ def on_segment(p, a, b, eps=0.01):
     return min(ax, bx) - eps <= px <= max(ax, bx) + eps and min(ay, by) - eps <= py <= max(ay, by) + eps
 
 
+def crosses(a, b):
+    """True if wires a and b ([x1, y1, x2, y2]) cross at a point inside both."""
+    side = lambda p, q, r: (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+    p1, p2, q1, q2 = a[:2], a[2:], b[:2], b[2:]
+    return side(p1, p2, q1) * side(p1, p2, q2) < 0 and side(q1, q2, p1) * side(q1, q2, p2) < 0
+
+
 def main():
     spec_path = sys.argv[1]
     spec = json.load(open(spec_path, encoding='utf8'))
@@ -163,9 +170,12 @@ def main():
     G = json.load(open(glyph_file))
     fig, problems = Fig(), []
 
+    # a diagonal wire is allowed only as half of a cross-coupling X: it must cross another diagonal
+    diagonals = [w for w in spec['wires'] if w[0] != w[2] and w[1] != w[3]]
+    for d in diagonals:
+        if not any(e is not d and crosses(d, e) for e in diagonals):
+            problems.append('diagonal wire %s is not half of a cross-coupling X' % d)
     for x1, y1, x2, y2 in spec['wires']:
-        if x1 != x2 and y1 != y2:
-            problems.append('wire not horizontal/vertical: %s' % [x1, y1, x2, y2])
         fig.path([('M', [(x1, y1)]), ('L', [(x2, y2)])],
                  'fill="none" stroke="#000000" stroke-width="%s" stroke-linecap="round"' % f(WIRE_W), WIRE_W / 2)
     wire_els = len(fig.els)

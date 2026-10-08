@@ -6,7 +6,7 @@ You describe a circuit in plain words. Claude Code or Codex lays it out from a f
 of symbols, checks it against the drawing rules, and gives you one SVG file to drop into
 PowerPoint, Keynote or any slide tool.
 
-![PMOS-input current-mirror OTA](output/PMOS-input%20Current-Mirror%20OTA.png)
+![PMOS-input current-mirror OTA](references/OTA/OTA2P.png)
 
 ## Why one SVG per circuit
 

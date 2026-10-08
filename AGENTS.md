@@ -50,7 +50,8 @@ because it is derived from a font whose licence may not allow redistribution.
 ```
 
 - `type` is a `name` from `palette/palette.csv`. `flip` mirrors the symbol horizontally.
-- `wires` are `[x1, y1, x2, y2]`, horizontal or vertical.
+- `wires` are `[x1, y1, x2, y2]`, horizontal or vertical. The only diagonals are the two
+  crossing wires of a cross-coupled pair (`references/LPF/LPF1N.json`).
 - A label's `x` is its left edge (`"align": "left"`) or right edge (`"align": "right"`), and
   `y` is the line it is vertically centred on. `"main"` runs are italic, `"sub"` runs are
   upright subscripts. Use "−" (U+2212) for minus.

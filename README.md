@@ -1,4 +1,4 @@
-# cirfig_gen
+# <img src="https://raw.githubusercontent.com/KwantaeKim/KwantaeKim.github.io/main/favicon-rounded.png" height="40" align="top" alt=""> cirfig_gen
 
 Clean analog circuit schematics for slides, drawn by a coding agent.
 

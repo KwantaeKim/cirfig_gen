@@ -1,0 +1,4 @@
+# Built locally from the user's fonts; may not be redistributable
+tools/glyphs.json
+
+.DS_Store

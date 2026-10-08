@@ -1,0 +1,50 @@
+name,file,width_pt,height_pt,scale,line_pt,other_lines_pt
+Capacitor,Capacitor.svg,36.40,20.50,0.7502,3.00,plates 4.50
+Resistor,Resistor.svg,34.90,16.60,0.7507,3.00,
+Inductor,Inductor.svg,36.90,8.55,0.7500,3.00,
+Crystal,Crystal.svg,35.30,42.40,0.7495,3.00,
+Box-X,Chopper.svg,70.40,32.10,0.7500,3.00,
+Switch,Switch.svg,40.00,24.90,0.7492,3.00,
+Diode,Diode.svg,27.04,47.92,1.3333,3.00,triangle outline 1.00
+Current Source,Current Source.svg,35.14,35.14,0.7499,3.00,
+VDD,VDD.svg,22.90,16.70,0.6012,3.01,bar 3.61
+GND,GND.svg,14.80,14.60,0.5989,2.99,
+PAD,PAD.svg,21.50,21.50,0.7497,3.00,
+Voltage Node,Voltage Node.svg,12.60,12.60,0.7491,3.00,
+Line,Wire.svg,25.80,4.50,0.7511,3.00,
+NMOS,NMOS.svg,39.40,56.60,0.7503,3.00,
+PMOS,PMOS.svg,39.38,56.56,0.7500,3.00,thin line 1.69
+NMOS HV,HVT NMOS.svg,39.40,56.60,0.7503,3.00,
+PMOS HV,HVT PMOS.svg,39.38,56.56,0.7500,3.00,thin line 1.69
+NMOS Thick,LVT NMOS.svg,39.40,56.60,0.7503,3.00,
+PMOS Thick,LVT PMOS.svg,39.38,56.56,0.7500,3.00,thin line 1.69
+NMOS B-S,NMOS BodyTie.svg,49.90,60.00,1.3339,3.00,
+PMOS B-S,PMOS BodyTie.svg,46.95,56.56,0.7500,3.00,thin line 1.69; dot 3.75
+NMOS Diode,NMOS Diode.svg,56.20,71.90,0.7506,3.00,
+PMOS Diode,PMOS Diode.svg,56.15,71.89,0.7500,3.00,thin line 1.69
+NPN,NPN.svg,42.00,53.40,1.3329,3.00,
+PNP,PNP.svg,42.01,53.36,1.3332,3.00,
+Amp,Amp.svg,72.52,57.65,0.7499,3.00,
+Comp,Comp.svg,61.90,57.70,0.7499,3.00,
+FD OpAm,FD OpAm.svg,75.40,66.30,0.7504,3.00,
+Buffer,Buffer.svg,56.19,41.31,1.3334,3.00,
+Inverter,INV.svg,54.52,36.39,0.7500,3.00,
+Inverter Small,Inverter_small.svg,42.19,27.56,1.3334,3.00,
+AND,AND.svg,49.88,37.07,0.7500,3.00,
+NAND,NAND.svg,58.91,37.07,0.7500,3.00,
+OR,OR.svg,54.30,37.07,0.7500,3.00,
+NOR,NOR.svg,63.17,37.07,0.7500,3.00,
+XOR,XOR.svg,60.02,37.07,0.7500,3.00,
+Mux,MUX.svg,35.53,60.52,0.7499,3.00,
+DFF,D FF Small.svg,51.31,47.93,0.7499,3.00,
+DFF QB,D FF Large.svg,59.13,51.05,0.7500,3.00,Q-bar 1.50
+Ring Oscillator,Ring OSC.svg,86.29,82.25,1.3333,3.00,
+Sum,Summer.svg,67.75,55.23,1.3334,3.00,signs 2.17
+Pure-Sine,Pure-Sine.svg,46.30,64.80,0.6001,3.00,
+Pseudo-Sine,Pseudo-Sine.svg,57.90,81.00,0.7505,3.00,
+Clock,Clock.svg,46.30,33.60,0.6001,3.00,
+Noise,Noise.svg,93.84,50.53,1.3333,3.00,
+ECG,ECG 2¼.svg,81.37,76.41,1.3333,3.00,
+APW,APW 2¼.svg,81.37,71.56,1.3333,3.00,
+Non-Overlap,Non-Overlap.1.svg,39.34,35.48,1.0000,3.00,
+Light,Light.svg,37.53,28.32,1.3332,3.00,

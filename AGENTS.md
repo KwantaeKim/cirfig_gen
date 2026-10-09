@@ -51,12 +51,12 @@ because it is derived from a font whose licence may not allow redistribution.
 
 - `type` is a `name` from `palette/palette.csv`. `flip` mirrors the symbol horizontally.
 - `wires` are `[x1, y1, x2, y2]`, horizontal or vertical. The only diagonals are the two
-  crossing wires of a cross-coupled pair (`references/LPF/LPF1N.json`).
+  crossing wires of a cross-coupled pair (see `references/`).
 - A label's `x` is its left edge (`"align": "left"`) or right edge (`"align": "right"`), and
   `y` is the line it is vertically centred on. `"main"` runs are italic, `"sub"` runs are
   upright subscripts. Use "−" (U+2212) for minus.
 - The frame is arbitrary. The renderer adds the 3 pt margin.
-- `output/` has complete examples.
+- Generated figures go in `output/`.
 
 ## Common pins
 
@@ -68,6 +68,10 @@ x' = width − x.
 | NMOS           | 39.40 × 56.60  | gate (2.251, 28.296), drain (37.149, 2.252), source (37.149, 54.348) |
 | PMOS           | 39.38 × 56.56  | gate (2.250, 28.209), source (37.130, 2.250), drain (37.130, 54.310) |
 | Current Source | 35.14 × 35.14  | top (17.570, 2.250), bottom (17.570, 32.890) |
+| Voltage Source | 35.14 × 35.14  | + top (17.570, 2.250), − bottom (17.570, 32.890). DC source, + on top |
+| Voltage Source H | 35.14 × 35.14 | + left (2.250, 17.570), − right (32.890, 17.570). The same source lying down; flip it to put + on the right |
+| Voltage Source Inv | 35.14 × 35.14 | − top (17.570, 2.250), + bottom (17.570, 32.890). The upright source with − on top, since symbols cannot be flipped vertically |
+| Diode H        | 47.92 × 27.04  | anode left (4.000, 13.533), cathode right (43.920, 13.533). The Diode lying down, pointing right. Flip it to point left |
 | VDD            | 22.90 × 16.70  | pin (11.447, 14.905), the bottom of the stem |
 | GND            | 14.80 × 14.60  | pin (7.400, 1.799), the middle of the top bar |
 | Voltage Node   | 12.60 × 12.60  | centre (6.300, 6.300). A wire ends on the ring's centre line, 4.053 from the centre. The ring's outer edge is 5.551 from the centre. |

@@ -51,7 +51,7 @@ If a figure is too big for your slide, ask for a tighter layout instead of scali
 |-----------------------|----------|
 | `AGENTS.md`           | Instructions the agent follows (`CLAUDE.md` points to it) |
 | `rules.md`            | Drawing rules every figure must follow |
-| `palette/`            | The 49 symbol SVGs |
+| `palette/`            | The 53 symbol SVGs |
 | `palette/palette.csv` | Each symbol's size on the slide and its line widths |
 | `tools/render.py`     | Turns a layout (JSON) into one SVG and checks it |
 | `tools/make_glyphs.py`| Builds the label letter outlines from a font on your computer |

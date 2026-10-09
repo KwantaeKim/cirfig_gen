@@ -6,7 +6,11 @@ Crystal,Crystal.svg,35.30,42.40,0.7495,3.00,
 Box-X,Chopper.svg,70.40,32.10,0.7500,3.00,
 Switch,Switch.svg,40.00,24.90,0.7492,3.00,
 Diode,Diode.svg,27.04,47.92,1.3333,3.00,triangle outline 1.00
+Diode H,Diode H.svg,47.92,27.04,1.3333,3.00,triangle outline 1.00
 Current Source,Current Source.svg,35.14,35.14,0.7499,3.00,
+Voltage Source,Voltage Source.svg,35.14,35.14,0.7499,3.00,signs 2.17
+Voltage Source H,Voltage Source H.svg,35.14,35.14,0.7499,3.00,signs 2.17
+Voltage Source Inv,Voltage Source Inv.svg,35.14,35.14,0.7499,3.00,signs 2.17
 VDD,VDD.svg,22.90,16.70,0.6012,3.01,bar 3.61
 GND,GND.svg,14.80,14.60,0.5989,2.99,
 PAD,PAD.svg,21.50,21.50,0.7497,3.00,

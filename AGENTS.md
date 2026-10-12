@@ -72,6 +72,10 @@ x' = width − x.
 | Voltage Source H | 35.14 × 35.14 | + left (2.250, 17.570), − right (32.890, 17.570). The same source lying down; flip it to put + on the right |
 | Voltage Source Inv | 35.14 × 35.14 | − top (17.570, 2.250), + bottom (17.570, 32.890). The upright source with − on top, since symbols cannot be flipped vertically |
 | Diode H        | 47.92 × 27.04  | anode left (4.000, 13.533), cathode right (43.920, 13.533). The Diode lying down, pointing right. Flip it to point left |
+| Current Arrow  | 14.10 × 26.00  | no pins. A free-standing arrow pointing down (3 pt shaft, filled head as on the Summer), placed beside a wire with a 3 pt gap to mark a current direction. It is never part of a wire |
+| Current Arrow H | 26.00 × 14.10 | no pins. The same arrow pointing right; flip it to point left |
+| NPN            | 42.00 × 53.40  | base (3.999, 26.700), collector top (38.001, 4.003), emitter bottom (38.001, 49.397) |
+| PNP            | 42.01 × 53.36  | base (3.999, 26.671), emitter top (38.010, 4.000), collector bottom (38.010, 49.344) |
 | VDD            | 22.90 × 16.70  | pin (11.447, 14.905), the bottom of the stem |
 | GND            | 14.80 × 14.60  | pin (7.400, 1.799), the middle of the top bar |
 | Voltage Node   | 12.60 × 12.60  | centre (6.300, 6.300). A wire ends on the ring's centre line, 4.053 from the centre. The ring's outer edge is 5.551 from the centre. |

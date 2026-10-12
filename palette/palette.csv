@@ -11,6 +11,8 @@ Current Source,Current Source.svg,35.14,35.14,0.7499,3.00,
 Voltage Source,Voltage Source.svg,35.14,35.14,0.7499,3.00,signs 2.17
 Voltage Source H,Voltage Source H.svg,35.14,35.14,0.7499,3.00,signs 2.17
 Voltage Source Inv,Voltage Source Inv.svg,35.14,35.14,0.7499,3.00,signs 2.17
+Current Arrow,Current Arrow.svg,14.10,26.00,1.0000,3.00,head 12.00 long 8.10 wide
+Current Arrow H,Current Arrow H.svg,26.00,14.10,1.0000,3.00,head 12.00 long 8.10 wide
 VDD,VDD.svg,22.90,16.70,0.6012,3.01,bar 3.61
 GND,GND.svg,14.80,14.60,0.5989,2.99,
 PAD,PAD.svg,21.50,21.50,0.7497,3.00,

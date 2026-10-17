@@ -127,14 +127,16 @@ def place_label(fig, lab, G):
     # main letters: bold italic font; subscripts: the matching upright bold font
     face = lambda kind: (G['italic'], G['upm_italic']) if kind == 'main' else (G['upright'], G['upm_upright'])
     runs = [(ch, kind) for text, kind in lab['runs'] for ch in text]
-    size = lambda kind: MAIN_SIZE if kind == 'main' else SUB_SIZE
-    width = sum(face(k)[0]['glyphs'][ch]['adv'] * size(k) / face(k)[1] for ch, k in runs)
+    main = float(lab.get('size', MAIN_SIZE))                  # optional per-label size; 20 pt (rules.md 17) by default
+    k = main / MAIN_SIZE                                      # subscript size and drop scale with it
+    size = lambda kind: main if kind == 'main' else SUB_SIZE * k
+    width = sum(face(kk)[0]['glyphs'][ch]['adv'] * size(kk) / face(kk)[1] for ch, kk in runs)
     x = lab['x'] if lab.get('align', 'left') == 'left' else lab['x'] - width
-    base = lab['y'] + G['italic']['cap_height'] * MAIN_SIZE / G['upm_italic'] / 2   # centre the capitals on y
+    base = lab['y'] + G['italic']['cap_height'] * main / G['upm_italic'] / 2   # centre the capitals on y
     for ch, kind in runs:
         fc, upm = face(kind)
         g, s = fc['glyphs'][ch], size(kind) / upm
-        b = base + (SUB_DROP if kind == 'sub' else 0)
+        b = base + (SUB_DROP * k if kind == 'sub' else 0)
         segs = []
         for c in g['path']:
             if c[0] == 'Z':

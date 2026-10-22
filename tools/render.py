@@ -36,11 +36,46 @@ def palette_table():
         return {r['name']: (r['file'], float(r['width_pt']), float(r['height_pt'])) for r in csv.DictReader(fh)}
 
 
+def arc_points(cur, rx, ry, rot, large, sweep, x, y, n=12):
+    """Points along an SVG elliptical arc from cur to (x, y), as n straight segments (SVG
+    implementation notes, endpoint to centre parameterisation)."""
+    phi = math.radians(rot)
+    cp, sp = math.cos(phi), math.sin(phi)
+    x1, y1 = cur
+    dx, dy = (x1 - x) / 2, (y1 - y) / 2
+    x1p, y1p = cp * dx + sp * dy, -sp * dx + cp * dy
+    rx, ry = abs(rx), abs(ry)
+    lam = (x1p / rx) ** 2 + (y1p / ry) ** 2
+    if lam > 1:
+        rx, ry = rx * math.sqrt(lam), ry * math.sqrt(lam)
+    num = rx * rx * ry * ry - rx * rx * y1p * y1p - ry * ry * x1p * x1p
+    den = rx * rx * y1p * y1p + ry * ry * x1p * x1p
+    coef = math.sqrt(max(num / den, 0.0)) * (-1 if bool(large) == bool(sweep) else 1)
+    cxp, cyp = coef * rx * y1p / ry, -coef * ry * x1p / rx
+    cx, cy = cp * cxp - sp * cyp + (x1 + x) / 2, sp * cxp + cp * cyp + (y1 + y) / 2
+    ang = lambda ux, uy, vx, vy: math.atan2(ux * vy - uy * vx, ux * vx + uy * vy)
+    ux, uy = (x1p - cxp) / rx, (y1p - cyp) / ry
+    th1 = ang(1, 0, ux, uy)
+    dth = ang(ux, uy, (-x1p - cxp) / rx, (-y1p - cyp) / ry)
+    if not sweep and dth > 0:
+        dth -= 2 * math.pi
+    elif sweep and dth < 0:
+        dth += 2 * math.pi
+    pts = []
+    for k in range(1, n + 1):
+        t = th1 + dth * k / n
+        ex, ey = rx * math.cos(t), ry * math.sin(t)
+        pts.append((cp * ex - sp * ey + cx, sp * ex + cp * ey + cy))
+    pts[-1] = (x, y)
+    return pts
+
+
 def parse_path(d):
-    """Absolute SVG path (M L H V Q C Z, implicit repeats) -> list of (cmd, [points])."""
-    toks = re.findall(r'[MLHVQCZmlhvqcz]|-?\d*\.?\d+(?:e-?\d+)?', d)
+    """Absolute SVG path (M L H V Q C A Z, implicit repeats) -> list of (cmd, [points]).
+    Arcs (A) are flattened into straight segments."""
+    toks = re.findall(r'[MLHVQCAZmlhvqcaz]|-?\d*\.?\d+(?:e-?\d+)?', d)
     out, i, cmd, cur = [], 0, None, (0.0, 0.0)
-    need = {'M': 2, 'L': 2, 'H': 1, 'V': 1, 'Q': 4, 'C': 6}
+    need = {'M': 2, 'L': 2, 'H': 1, 'V': 1, 'Q': 4, 'C': 6, 'A': 7}
     while i < len(toks):
         t = toks[i]
         if t.isalpha():
@@ -53,6 +88,7 @@ def parse_path(d):
         v = [float(x) for x in toks[i:i + n]]; i += n
         if cmd == 'H': pts = [(v[0], cur[1])]; c = 'L'
         elif cmd == 'V': pts = [(cur[0], v[0])]; c = 'L'
+        elif cmd == 'A': pts = arc_points(cur, *v); c = 'L'
         else: pts = [(v[k], v[k + 1]) for k in range(0, n, 2)]; c = cmd
         out.append((c, pts)); cur = pts[-1]
         if cmd == 'M': cmd = 'L'                      # implicit lineto after moveto

@@ -53,7 +53,8 @@ They are the golden standard for the look of every graph. When the user asks for
 open the closest reference, reuse its `apply_style` and `style_axis`, and keep the shared
 look exactly: Arial Narrow bold labels, navy, red `#C80000` and black lines, 0.3 pt grid on
 major and minor ticks, engineering tick labels through `EngFormatter`, a 4 in wide figure
-saved as PNG at 300 dpi with `bbox_inches="tight"`. Every script runs on its own with
+saved as PNG at 300 dpi with `bbox_inches="tight"`. No title on a plot, and no tagline or
+caption sentence on it: the slide carries the title. Every script runs on its own with
 `--out fig.png` and reads its data from its own folder.
 
 The references are examples of style, not a catalogue of allowed plots. A slide on any

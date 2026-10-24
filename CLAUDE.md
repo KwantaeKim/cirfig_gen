@@ -11,6 +11,11 @@ These complement `AGENTS.md` and apply to every reply and every file written her
   "current-mirror load".
 - Do not use a semicolon to connect sentences or phrases. Inside code it is fine.
 - Write "layout" as one word, also as a verb: "layout the differential pair".
+- No slogans, taglines or catchy headlines, anywhere: not on figures or plots, and not in the
+  README, docstrings, commit messages or replies. State what a thing does in plain words
+  ("renders one SVG per circuit"), never sell it ("pixel-perfect schematics in seconds").
+- Never invent a title. Figures and plots have no title, and a headline exists only when I
+  ask for one and give its wording.
 
 ## Files
 
@@ -19,6 +24,9 @@ These complement `AGENTS.md` and apply to every reply and every file written her
   editor, and a file open in VS Code then reports "The content of the file is newer". The one
   exception is a build script in `output/build/` regenerating its own `output/<name>.json`.
 - Keep temporary files inside this project, in `output/build/`, never in a system temp folder.
+- A file I edited by hand is the master. If `output/<name>.json` changed since its build
+  script last wrote it, read it first and carry my edits into `output/build/<name>.py`
+  before rerunning the script, so they are not overwritten.
 - Never open PowerPoint or any other application that holds a deck. The decks in `output/`
   are edited in parallel. Work on files only and render previews to PNG.
 
@@ -34,6 +42,8 @@ These complement `AGENTS.md` and apply to every reply and every file written her
   one to three words on the picture.
 - No explanatory phrases on the picture. If a label needs a verb, replace it with a visual
   and put the explanation in the speaker notes.
+- On a plot, mark the key point with a dot, a dotted guide line and a short label. Extend a
+  projection far enough that the key point is visible.
 - Physics must be right. Simplify, but never draw something false. When the physics of a
   picture is unclear, state it in one sentence before drawing.
 

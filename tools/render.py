@@ -14,6 +14,8 @@ Layout JSON (all numbers in pt, in any frame; the SVG gets a 3 pt margin automat
 "type" is a name from palette/palette.csv. "flip" mirrors the symbol horizontally.
 A label's "x" is its left edge (align "left") or right edge (align "right"), and "y" is the
 line it is vertically centred on.
+The optional "edge_ends": [[x, y], ...] lists the wire ends that land on a straight edge drawn
+outside the figure, such as a gate rectangle on the slide. They get a butt cap (rules.md 9).
 """
 import csv
 import json
@@ -262,13 +264,16 @@ def crosses(a, b):
     return side(p1, p2, q1) * side(p1, p2, q2) < 0 and side(q1, q2, p1) * side(q1, q2, p2) < 0
 
 
-def end_cap(p, i, wires, fig):
+def end_cap(p, i, wires, fig, edge_ends):
     """Cap of the end p of wire i (rules.md 9). Butt where the wire arrives across a straight
     symbol side and stops inside it: a box side, plate or bar, or a pin on one such as the GND pin.
+    Butt also at a listed edge end, where the wire stops on a straight edge outside the figure.
     Round everywhere else: on another wire, at the end of a lead (most pins), along a lead it
     continues, on a circle, ring or bubble, at a corner, inside a face, or free."""
     if any(j != i and on_segment(p, w[:2], w[2:]) for j, w in enumerate(wires)):
         return 'round'
+    if any(math.hypot(p[0] - q[0], p[1] - q[1]) < 0.01 for q in edge_ends):
+        return 'butt'
     x1, y1, x2, y2 = wires[i]
     def lands_on(a, b):
         across = abs((x2 - x1) * (b[1] - a[1]) - (y2 - y1) * (b[0] - a[0])) > 0.02 * math.hypot(x2 - x1, y2 - y1) * math.hypot(b[0] - a[0], b[1] - a[1])
@@ -319,16 +324,21 @@ def main():
         place_label(fig, lab, G)
     above, fig.els = fig.els, []                              # the caps need the symbols, but wires are drawn first
 
-    # every wire end must sit on a symbol pin or on another wire, and gets its cap from what it touches
-    wires = spec['wires']
+    # every wire end must sit on a symbol pin, on another wire or on a listed edge end outside the
+    # figure, and gets its cap from what it touches
+    wires, edge_ends = spec['wires'], spec.get('edge_ends', [])
     for i, (x1, y1, x2, y2) in enumerate(wires):
         for p in ((x1, y1), (x2, y2)):
             ok = any(math.hypot(p[0] - q[0], p[1] - q[1]) < 0.01 for q in fig.pins)
             ok = ok or any(on_segment(p, a, b) for a, b in fig.edges)
             ok = ok or any(j != i and on_segment(p, (w[0], w[1]), (w[2], w[3])) for j, w in enumerate(wires))
+            ok = ok or any(math.hypot(p[0] - q[0], p[1] - q[1]) < 0.01 for q in edge_ends)
             if not ok:
                 problems.append('wire end %s is not on a pin or wire' % (tuple(round(v, 3) for v in p),))
-        place_wire(fig, wires[i], [end_cap(p, i, wires, fig) for p in ((x1, y1), (x2, y2))])
+        place_wire(fig, wires[i], [end_cap(p, i, wires, fig, edge_ends) for p in ((x1, y1), (x2, y2))])
+    for q in edge_ends:
+        if not any(math.hypot(q[0] - x, q[1] - y) < 0.01 for w in wires for x, y in (w[:2], w[2:])):
+            problems.append('edge end %s is not the end of a wire' % (tuple(round(v, 3) for v in q),))
     fig.els += above
 
     xs, ys = [p[0] for p in fig.pts], [p[1] for p in fig.pts]
@@ -343,7 +353,8 @@ def main():
     print('Wrote %s' % os.path.relpath(out))
     print('Size: %.2f x %.2f pt (insert at 100%%, never resize)' % (W, H))
     print('%d wires, %d symbols, %d dots, %d labels' % (len(wires), len(spec['symbols']), len(spec['dots']), len(spec.get('labels', []))))
-    print('Checks: ' + ('all wire ends on pins or wires' if not problems else '\n  ' + '\n  '.join(problems)))
+    landed = 'pins, wires or listed edge ends' if edge_ends else 'pins or wires'
+    print('Checks: ' + ('all wire ends on ' + landed if not problems else '\n  ' + '\n  '.join(problems)))
 
 
 if __name__ == '__main__':

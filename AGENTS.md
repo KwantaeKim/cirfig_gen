@@ -144,6 +144,8 @@ The renderer only checks that wire ends land on pins or wires. Everything else i
   crossing wires of a cross-coupled pair (see `references/`).
 - Each wire end gets a butt or round cap from what it touches (`rules.md` rule 9). The
   renderer picks it.
+- Optional `"edge_ends": [[140.0, 118.0]]` lists only wire ends on a straight edge drawn outside
+  the figure. Ends on the figure's own symbols are found automatically and must not be listed.
 - A label's `x` is its left edge (`"align": "left"`) or right edge (`"align": "right"`), and
   `y` is the line it is vertically centred on. `"main"` runs are italic, `"sub"` runs are
   upright subscripts. Use "−" (U+2212) for minus.

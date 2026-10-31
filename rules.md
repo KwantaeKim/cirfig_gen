@@ -31,6 +31,7 @@ Every circuit figure must follow these rules. Positions and sizes are in points 
    | The end touches | Cap |
    |-----------------|-----|
    | A straight edge: the side of a rectangle, plate or bar, or a pin that sits on one, such as the GND pin | Butt, flush with the edge |
+   | A straight edge outside the figure, listed in the JSON | Butt, flush with the edge |
    | Another wire (a corner or T) or a dot | Round |
    | The free end of a lead: the transistor, capacitor, resistor and VDD pins | Round |
    | A circle or ring: a source, the PMOS bubble, a Voltage Node | Round |

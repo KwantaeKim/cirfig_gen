@@ -142,6 +142,8 @@ The renderer only checks that wire ends land on pins or wires. Everything else i
 - `type` is a `name` from `palette/palette.csv`. `flip` mirrors the symbol horizontally.
 - `wires` are `[x1, y1, x2, y2]`, horizontal or vertical. The only diagonals are the two
   crossing wires of a cross-coupled pair (see `references/`).
+- Each wire end gets a butt or round cap from what it touches (`rules.md` rule 9). The
+  renderer picks it.
 - A label's `x` is its left edge (`"align": "left"`) or right edge (`"align": "right"`), and
   `y` is the line it is vertically centred on. `"main"` runs are italic, `"sub"` runs are
   upright subscripts. Use "−" (U+2212) for minus.

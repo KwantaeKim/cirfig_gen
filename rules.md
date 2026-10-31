@@ -25,7 +25,22 @@ Every circuit figure must follow these rules. Positions and sizes are in points 
 
 ## Wires
 
-9. A wire is a straight, solid black (#000000), 3.00 pt line with round caps and no arrowheads.
+9. A wire is a straight, solid black (#000000), 3.00 pt line with no arrowheads. Each end gets
+   its cap from what it touches:
+
+   | The end touches | Cap |
+   |-----------------|-----|
+   | A straight edge: the side of a rectangle, plate or bar, or a pin that sits on one, such as the GND pin | Butt, flush with the edge |
+   | Another wire (a corner or T) or a dot | Round |
+   | The free end of a lead: the transistor, capacitor, resistor and VDD pins | Round |
+   | A circle or ring: a source, the PMOS bubble, a Voltage Node | Round |
+   | The inside of a face, short of its edge, or nothing (a free end) | Round |
+
+   Either way, the visible end sits exactly where the wire must stop. A butt end keeps its
+   endpoint on the edge. A round cap reaches half the stroke width (1.5 pt) past the endpoint, so
+   a round end that must stop at a given point has its endpoint pulled back by 1.5 pt. On a pin
+   or another wire the endpoint stays on it (rule 11), because the cap then lies over the joint.
+   `tools/render.py` picks each cap.
 10. Wires are horizontal or vertical only, with one exception: the cross-coupling of a
     cross-coupled pair is a symmetric X. Each side leaves its node on a horizontal wire, runs
     diagonally across the centre line to the other device's gate wire, and the two diagonals

@@ -27,6 +27,7 @@ ROOT = os.path.join(HERE, '..')
 MARGIN = 3.0
 WIRE_W = 3.0
 DOT_D = 7.09
+GENTLE = 45.0                                   # deg: a polyline that turns less than this per vertex is a curve
 MAIN_SIZE, SUB_SIZE, SUB_DROP = 20.0, 20.0 * 2 / 3, 1.5
 f = lambda v: '%.3f' % v
 
@@ -97,7 +98,7 @@ def parse_path(d):
 
 class Fig:
     def __init__(self):
-        self.els, self.pts, self.pins, self.edges = [], [], [], []
+        self.els, self.pts, self.pins, self.edges, self.sides = [], [], [], [], []
 
     def extent(self, x, y, pad=0.0):
         self.pts += [(x - pad, y - pad), (x + pad, y + pad)]
@@ -124,6 +125,68 @@ def style_of(a, sx):
     return s, sw
 
 
+def turn(a, b, c):
+    """Change of direction at b on the way a -> b -> c, in degrees (0 to 180)."""
+    t = math.atan2(c[1] - b[1], c[0] - b[0]) - math.atan2(b[1] - a[1], b[0] - a[0])
+    return abs(math.degrees((t + math.pi) % (2 * math.pi) - math.pi))
+
+
+def add_sides(fig, segs):
+    """Store the straight sides of one symbol path for the wire end caps (rules.md 9).
+    Collinear segments merge into one side. Palette circles, rings and arcs are polylines that
+    turn a few degrees at every vertex, so a run that meets its neighbours only at such gentle
+    turns (or at Bezier curves) is part of a curve and not a side. So is a run shorter than a
+    wire with a gentle turn at one end: the last piece of an arc before a cusp or corner."""
+    subs = []                                                 # [points, Bezier segment indices, closed]
+    for c, pts in segs:
+        if c == 'M':
+            subs.append([[pts[0]], set(), False])
+        elif c == 'Z':
+            subs[-1][2] = True
+        else:
+            for q in (pts[-1:] if c in 'QC' else pts):        # a Bezier counts by its end point only
+                last = subs[-1][0][-1]
+                if math.hypot(q[0] - last[0], q[1] - last[1]) > 1e-6:
+                    if c in 'QC':
+                        subs[-1][1].add(len(subs[-1][0]) - 1)
+                    subs[-1][0].append(q)
+    for pts, bez, closed in subs:
+        if closed and math.hypot(pts[0][0] - pts[-1][0], pts[0][1] - pts[-1][1]) > 1e-6:
+            pts.append(pts[0])                                # Z draws the closing segment
+        m = len(pts) - 1                                      # segment k runs from pts[k] to pts[k + 1]
+        if m < 1:
+            continue
+        def joint(k):                                         # how segment k meets segment k + 1
+            a, b = k % m, (k + 1) % m
+            if a in bez or b in bez:
+                return 'gentle'
+            t = turn(pts[a], pts[a + 1], pts[b + 1])
+            return 'straight' if t < 1 else 'gentle' if t < GENTLE else 'corner'
+        J = [joint(k) for k in range(m if closed else m - 1)]
+        if closed:                                            # start the walk just after a corner
+            breaks = [k for k in range(m) if J[k] != 'straight']
+            if not breaks:
+                continue
+            order = [(breaks[0] + 1 + k) % m for k in range(m)]
+        else:
+            order = list(range(m))
+        runs = [[order[0]]]
+        for a, b in zip(order, order[1:]):
+            if J[a] == 'straight':
+                runs[-1].append(b)
+            else:
+                runs.append([b])
+        for r in runs:
+            if r[0] in bez:
+                continue
+            ends = [J[(r[0] - 1) % m] if closed or r[0] > 0 else None, J[r[-1]] if closed or r[-1] < m - 1 else None]
+            ends = [e for e in ends if e]
+            a, b = pts[r[0]], pts[r[-1] + 1]
+            if ends and ('corner' not in ends or 'gentle' in ends and math.hypot(b[0] - a[0], b[1] - a[1]) < WIRE_W):
+                continue
+            fig.sides.append((a, b))
+
+
 def place_symbol(fig, sym, table):
     fname, w, h = table[sym['type']]
     svg = open(os.path.join(ROOT, 'palette', fname), encoding='utf8').read()
@@ -139,6 +202,7 @@ def place_symbol(fig, sym, table):
         if kind == 'path':
             segs = [(c, [(X(x), Y(y)) for x, y in pts]) for c, pts in parse_path(re.search(r'\bd="([^"]*)"', a).group(1))]
             fig.path(segs, style, sw / 2)
+            add_sides(fig, segs)
             prev = None
             for c, pts in segs:                                   # path vertices and straight edges can be pins
                 fig.pins += pts
@@ -198,6 +262,39 @@ def crosses(a, b):
     return side(p1, p2, q1) * side(p1, p2, q2) < 0 and side(q1, q2, p1) * side(q1, q2, p2) < 0
 
 
+def end_cap(p, i, wires, fig):
+    """Cap of the end p of wire i (rules.md 9). Butt where the wire arrives across a straight
+    symbol side and stops inside it: a box side, plate or bar, or a pin on one such as the GND pin.
+    Round everywhere else: on another wire, at the end of a lead (most pins), along a lead it
+    continues, on a circle, ring or bubble, at a corner, inside a face, or free."""
+    if any(j != i and on_segment(p, w[:2], w[2:]) for j, w in enumerate(wires)):
+        return 'round'
+    x1, y1, x2, y2 = wires[i]
+    def lands_on(a, b):
+        across = abs((x2 - x1) * (b[1] - a[1]) - (y2 - y1) * (b[0] - a[0])) > 0.02 * math.hypot(x2 - x1, y2 - y1) * math.hypot(b[0] - a[0], b[1] - a[1])
+        return across and on_segment(p, a, b) and min(math.hypot(p[0] - q[0], p[1] - q[1]) for q in (a, b)) > 0.01
+    return 'butt' if any(lands_on(a, b) for a, b in fig.sides) else 'round'
+
+
+def place_wire(fig, w, caps):
+    """One wire with the given cap at each end. SVG has one linecap per path, so a wire with one
+    butt end and one round end is a butt stroke plus a disc of the wire width centred on the round
+    end. A round cap is exactly that disc, so the wire still reads as one line."""
+    x1, y1, x2, y2 = w
+    length = math.hypot(x2 - x1, y2 - y1) or 1.0
+    nx, ny = (y1 - y2) / length * WIRE_W / 2, (x2 - x1) / length * WIRE_W / 2   # half the width, across the wire
+    cap = caps[0] if caps[0] == caps[1] else 'butt'
+    fig.path([('M', [(x1, y1)]), ('L', [(x2, y2)])],
+             'fill="none" stroke="#000000" stroke-width="%s" stroke-linecap="%s"' % (f(WIRE_W), cap), 0)
+    for (x, y), c in zip(((x1, y1), (x2, y2)), caps):
+        if c == 'butt':                                       # flush: nothing past the end, half the width across
+            fig.extent(x + nx, y + ny); fig.extent(x - nx, y - ny)
+        else:                                                 # round: half the width in every direction
+            fig.extent(x, y, WIRE_W / 2)
+            if cap == 'butt':
+                fig.els.append('<circle cx="%s" cy="%s" r="%s" fill="#000000"/>' % (f(x), f(y), f(WIRE_W / 2)))
+
+
 def main():
     spec_path = sys.argv[1]
     spec = json.load(open(spec_path, encoding='utf8'))
@@ -213,10 +310,6 @@ def main():
     for d in diagonals:
         if not any(e is not d and crosses(d, e) for e in diagonals):
             problems.append('diagonal wire %s is not half of a cross-coupling X' % d)
-    for x1, y1, x2, y2 in spec['wires']:
-        fig.path([('M', [(x1, y1)]), ('L', [(x2, y2)])],
-                 'fill="none" stroke="#000000" stroke-width="%s" stroke-linecap="round"' % f(WIRE_W), WIRE_W / 2)
-    wire_els = len(fig.els)
     for sym in spec['symbols']:
         place_symbol(fig, sym, table)
     for x, y in spec['dots']:
@@ -224,8 +317,9 @@ def main():
         fig.extent(x, y, DOT_D / 2)
     for lab in spec.get('labels', []):
         place_label(fig, lab, G)
+    above, fig.els = fig.els, []                              # the caps need the symbols, but wires are drawn first
 
-    # every wire end must sit on a symbol pin or on another wire
+    # every wire end must sit on a symbol pin or on another wire, and gets its cap from what it touches
     wires = spec['wires']
     for i, (x1, y1, x2, y2) in enumerate(wires):
         for p in ((x1, y1), (x2, y2)):
@@ -234,6 +328,8 @@ def main():
             ok = ok or any(j != i and on_segment(p, (w[0], w[1]), (w[2], w[3])) for j, w in enumerate(wires))
             if not ok:
                 problems.append('wire end %s is not on a pin or wire' % (tuple(round(v, 3) for v in p),))
+        place_wire(fig, wires[i], [end_cap(p, i, wires, fig) for p in ((x1, y1), (x2, y2))])
+    fig.els += above
 
     xs, ys = [p[0] for p in fig.pts], [p[1] for p in fig.pts]
     x0, y0 = min(xs) - MARGIN, min(ys) - MARGIN
@@ -246,7 +342,7 @@ def main():
         o.write('\n'.join(fig.els) + '\n</svg>\n')
     print('Wrote %s' % os.path.relpath(out))
     print('Size: %.2f x %.2f pt (insert at 100%%, never resize)' % (W, H))
-    print('%d wires, %d symbols, %d dots, %d labels' % (wire_els, len(spec['symbols']), len(spec['dots']), len(spec.get('labels', []))))
+    print('%d wires, %d symbols, %d dots, %d labels' % (len(wires), len(spec['symbols']), len(spec['dots']), len(spec.get('labels', []))))
     print('Checks: ' + ('all wire ends on pins or wires' if not problems else '\n  ' + '\n  '.join(problems)))
 
 

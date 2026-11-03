@@ -16,6 +16,25 @@ A label's "x" is its left edge (align "left") or right edge (align "right"), and
 line it is vertically centred on.
 The optional "edge_ends": [[x, y], ...] lists the wire ends that land on a straight edge drawn
 outside the figure, such as a gate rectangle on the slide. They get a butt cap (rules.md 9).
+
+The optional "rotate": 0, 90, 180 or 270 turns the finished figure clockwise about the origin.
+The JSON keeps its unturned coordinates, and the SVG is the turned figure, inserted unturned.
+  Wires, dots, edge ends and symbols turn with the figure, and so does a Voltage Node (a ring).
+  GND and VDD stay upright. Each is given in the JSON as if upright in the unturned frame,
+  with its pin on the wire end or lead. That pin turns, and the symbol is drawn upright about it.
+  Voltage Source, Voltage Source H and Voltage Source Inv are replaced by the variant whose +
+  points where the turned + points, so the signs stay upright. Current Arrow and Current Arrow H
+  turn, because the current turns with the circuit. Symbols with signs, letters or a time axis
+  inside (TEXT_SYMBOLS) cannot be turned and are reported.
+  Labels stay upright text and their anchor turns. The side of the label that faced the anchor
+  keeps facing it: after 180 "left" becomes "right" and back, after 90 a "left" label hangs below
+  its anchor and a "right" label stands above it, after 270 the other way round. A label above or
+  below its anchor is centred on it across, and its glyph outline ends on it.
+All checks run on the turned geometry. Every figure is checked for its supply leads: each one
+arrives from the side the upright symbol expects (GND from above, VDD from below). A turned
+figure also gets its label boxes checked: each keeps 3 pt from every wire, symbol, dot and other
+label (rules.md 24). The box spans the advance widths across and the glyph outlines from top to
+bottom. An unturned figure has its labels checked by its layout script, as before.
 """
 import csv
 import json
@@ -31,7 +50,19 @@ WIRE_W = 3.0
 DOT_D = 7.09
 GENTLE = 45.0                                   # deg: a polyline that turns less than this per vertex is a curve
 MAIN_SIZE, SUB_SIZE, SUB_DROP = 20.0, 20.0 * 2 / 3, 1.5
+CLEAR = 3.0                                     # pt between a label box and everything else
 f = lambda v: '%.3f' % v
+
+# clockwise turns about the origin, in SVG coordinates (y points down)
+TURNS = {0: lambda x, y: (x, y), 90: lambda x, y: (-y, x), 180: lambda x, y: (-x, -y), 270: lambda x, y: (y, -x)}
+UPRIGHT = {'GND': 'top', 'VDD': 'bottom'}     # supplies that never turn, and their pin side
+PLUS = {('Voltage Source', False): (0, -1), ('Voltage Source', True): (0, -1),
+        ('Voltage Source Inv', False): (0, 1), ('Voltage Source Inv', True): (0, 1),
+        ('Voltage Source H', False): (-1, 0), ('Voltage Source H', True): (1, 0)}   # where the + sign sits
+SOURCE_FOR = {(0, -1): ('Voltage Source', False), (0, 1): ('Voltage Source Inv', False),
+              (-1, 0): ('Voltage Source H', False), (1, 0): ('Voltage Source H', True)}
+TEXT_SYMBOLS = {'Amp', 'Comp', 'FD OpAm', 'Sum', 'DFF', 'DFF QB', 'Clock', 'Pure-Sine', 'Pseudo-Sine',
+                'Noise', 'ECG', 'APW', 'Non-Overlap'}
 
 
 def palette_table():
@@ -101,6 +132,7 @@ def parse_path(d):
 class Fig:
     def __init__(self):
         self.els, self.pts, self.pins, self.edges, self.sides = [], [], [], [], []
+        self.strokes, self.discs = [], []                     # symbol ink for the label clearance check
 
     def extent(self, x, y, pad=0.0):
         self.pts += [(x - pad, y - pad), (x + pad, y + pad)]
@@ -189,7 +221,34 @@ def add_sides(fig, segs):
             fig.sides.append((a, b))
 
 
-def place_symbol(fig, sym, table):
+def outline(segs, n=8):
+    """The straight pieces of one path, with each Bezier sampled into n pieces."""
+    out, cur, start = [], None, None
+    for c, pts in segs:
+        if c == 'M':
+            cur = start = pts[0]
+        elif c == 'Z':
+            if cur and start and cur != start:
+                out.append((cur, start))
+            cur = start
+        elif c == 'L':
+            for q in pts:
+                out.append((cur, q)); cur = q
+        else:
+            ctrl = [cur] + pts
+            for k in range(1, n + 1):
+                t = k / n
+                if c == 'Q':
+                    q = tuple((1 - t) ** 2 * ctrl[0][i] + 2 * t * (1 - t) * ctrl[1][i] + t * t * ctrl[2][i] for i in (0, 1))
+                else:
+                    q = tuple((1 - t) ** 3 * ctrl[0][i] + 3 * t * (1 - t) ** 2 * ctrl[1][i]
+                              + 3 * t * t * (1 - t) * ctrl[2][i] + t ** 3 * ctrl[3][i] for i in (0, 1))
+                out.append((cur, q)); cur = q
+    return out
+
+
+def place_symbol(fig, sym, table, turn=None):
+    """Draw one symbol. With turn, every point of it is turned with the figure."""
     fname, w, h = table[sym['type']]
     svg = open(os.path.join(ROOT, 'palette', fname), encoding='utf8').read()
     vx, vy, vw, vh = (float(v) for v in re.search(r'viewBox="([-\d.]+) ([-\d.]+) ([\d.]+) ([\d.]+)"', svg).groups())
@@ -197,14 +256,17 @@ def place_symbol(fig, sym, table):
     L, T, flip = sym['left'], sym['top'], sym.get('flip', False)
     X = lambda px: L + w - (px - vx) * sx if flip else L + (px - vx) * sx
     Y = lambda py: T + (py - vy) * sy
+    P = (lambda px, py: (X(px), Y(py))) if turn is None else (lambda px, py: turn(X(px), Y(py)))
     for m in re.finditer(r'<(path|circle|rect)\b([^>]*)/?>', svg):
         kind, a = m.groups()
         style, sw = style_of(a, sx)
         num = lambda k: float(re.search(r'\b%s="([^"]*)"' % k, a).group(1))
         if kind == 'path':
-            segs = [(c, [(X(x), Y(y)) for x, y in pts]) for c, pts in parse_path(re.search(r'\bd="([^"]*)"', a).group(1))]
+            segs = [(c, [P(x, y) for x, y in pts]) for c, pts in parse_path(re.search(r'\bd="([^"]*)"', a).group(1))]
             fig.path(segs, style, sw / 2)
             add_sides(fig, segs)
+            cap = 'butt' if 'stroke-linecap="butt"' in style else 'round'
+            fig.strokes += [(p, q, sw / 2, cap) for p, q in outline(segs)]
             prev = None
             for c, pts in segs:                                   # path vertices and straight edges can be pins
                 fig.pins += pts
@@ -212,20 +274,44 @@ def place_symbol(fig, sym, table):
                     fig.edges.append((prev, pts[-1]))
                 prev = pts[-1] if pts else prev
         elif kind == 'circle':
-            cx, cy, r = X(num('cx')), Y(num('cy')), num('r') * sx
+            (cx, cy), r = P(num('cx'), num('cy')), num('r') * sx
             fig.els.append('<circle cx="%s" cy="%s" r="%s" %s/>' % (f(cx), f(cy), f(r), style))
             fig.extent(cx, cy, r + sw / 2)
             fig.pins += [(cx - r, cy), (cx + r, cy), (cx, cy - r), (cx, cy + r)]
+            fig.discs.append((cx, cy, r + sw / 2))
         else:
-            x0, x1 = sorted((X(num('x')), X(num('x') + num('width'))))
-            y0 = Y(num('y'))
+            if turn is None:
+                x0, x1 = sorted((X(num('x')), X(num('x') + num('width'))))
+                y0 = Y(num('y'))
+                y1 = y0 + num('height') * sy
+            else:                                                 # a turned rectangle is still axis aligned
+                (ax, ay), (bx, by) = P(num('x'), num('y')), P(num('x') + num('width'), num('y') + num('height'))
+                (x0, x1), (y0, y1) = sorted((ax, bx)), sorted((ay, by))
             rx = float((re.search(r'\brx="([^"]*)"', a) or [0, 0])[1]) * sx
             fig.els.append('<rect x="%s" y="%s" width="%s" height="%s" rx="%s" %s/>'
-                           % (f(x0), f(y0), f(x1 - x0), f(num('height') * sy), f(rx), style))
-            fig.extent(x0, y0); fig.extent(x1, y0 + num('height') * sy)
+                           % (f(x0), f(y0), f(x1 - x0), f(y1 - y0 if turn else num('height') * sy), f(rx), style))
+            fig.extent(x0, y0); fig.extent(x1, y1)
+            c = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+            fig.strokes += [(c[k], c[(k + 1) % 4], sw / 2, 'round') for k in range(4)]
 
 
-def place_label(fig, lab, G):
+def supply_pin(sym, table):
+    """Pin of an upright supply symbol, from its top-left corner: the end of its lead on the pin
+    side (VDD stem) or the middle of its bar there (GND)."""
+    fname, w, h = table[sym['type']]
+    svg = open(os.path.join(ROOT, 'palette', fname), encoding='utf8').read()
+    vx, vy, vw, vh = (float(v) for v in re.search(r'viewBox="([-\d.]+) ([-\d.]+) ([\d.]+) ([\d.]+)"', svg).groups())
+    pts = [((x - vx) * w / vw, (y - vy) * h / vh) for m in re.finditer(r'<path\b[^>]*\bd="([^"]*)"', svg)
+           for c, ps in parse_path(m.group(1)) for x, y in ps]
+    y = (min if UPRIGHT[sym['type']] == 'top' else max)(p[1] for p in pts)
+    xs = [p[0] for p in pts if abs(p[1] - y) < 1e-6]
+    x = (min(xs) + max(xs)) / 2
+    return (w - x if sym.get('flip', False) else x), y
+
+
+def label_glyphs(lab, G):
+    """The glyph outlines of one label, and its box (x0, x1, y0, y1): the advance widths across,
+    as the layout scripts measure them, and the glyph outlines from top to bottom."""
     # main letters: bold italic font; subscripts: the matching upright bold font
     face = lambda kind: (G['italic'], G['upm_italic']) if kind == 'main' else (G['upright'], G['upm_upright'])
     runs = [(ch, kind) for text, kind in lab['runs'] for ch in text]
@@ -234,7 +320,9 @@ def place_label(fig, lab, G):
     size = lambda kind: main if kind == 'main' else SUB_SIZE * k
     width = sum(face(kk)[0]['glyphs'][ch]['adv'] * size(kk) / face(kk)[1] for ch, kk in runs)
     x = lab['x'] if lab.get('align', 'left') == 'left' else lab['x'] - width
+    left = x
     base = lab['y'] + G['italic']['cap_height'] * main / G['upm_italic'] / 2   # centre the capitals on y
+    glyphs = []
     for ch, kind in runs:
         fc, upm = face(kind)
         g, s = fc['glyphs'][ch], size(kind) / upm
@@ -246,8 +334,85 @@ def place_label(fig, lab, G):
             pts = [(x + s * c[k], b - s * c[k + 1]) for k in range(1, len(c), 2)]
             segs.append((c[0], pts))
         if segs:
-            fig.path(segs, 'fill="#000000"', 0)
+            glyphs.append(segs)
         x += g['adv'] * s
+    ys = [p[1] for segs in glyphs for c, pts in segs for p in pts] or [lab['y']]
+    return glyphs, (left, left + width, min(ys), max(ys))
+
+
+def place_label(fig, lab, G):
+    glyphs, box = label_glyphs(lab, G)
+    for segs in glyphs:
+        fig.path(segs, 'fill="#000000"', 0)
+    return box
+
+
+def turn_label(lab, G, turn):
+    """The label of the turned figure: upright text whose anchor turned with the figure. The side
+    that faced the anchor keeps facing it. Text that would run down or up is centred across on the
+    anchor and hangs below it or stands above it, with its glyph outline ending on the anchor."""
+    _, (x0, x1, top, bottom) = label_glyphs(dict(lab, x=0.0, y=0.0, align='left'), G)
+    ax, ay = turn(lab['x'], lab['y'])
+    dx, dy = turn(1 if lab.get('align', 'left') == 'left' else -1, 0)   # the way the text runs from its anchor
+    if dx:
+        return dict(lab, x=ax, y=ay, align='left' if dx > 0 else 'right')
+    return dict(lab, x=ax - (x1 - x0) / 2, y=ay - (top if dy > 0 else bottom), align='left')
+
+
+def side_name(v):
+    return ('the right' if v[0] > 0 else 'the left') if abs(v[0]) > abs(v[1]) else ('below' if v[1] > 0 else 'above')
+
+
+def pt_seg(p, a, b):
+    """Distance from point p to segment ab."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    t = 0.0 if not (dx or dy) else max(0.0, min(1.0, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy)))
+    return math.hypot(p[0] - a[0] - t * dx, p[1] - a[1] - t * dy)
+
+
+def rect_seg(r, a, b):
+    """Distance from the box r = (x0, x1, y0, y1) to segment ab, 0 if they touch."""
+    x0, x1, y0, y1 = r
+    inside = lambda p: x0 <= p[0] <= x1 and y0 <= p[1] <= y1
+    if inside(a) or inside(b):
+        return 0.0
+    c = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+    side = lambda p, q, s: (q[0] - p[0]) * (s[1] - p[1]) - (q[1] - p[1]) * (s[0] - p[0])
+    for k in range(4):
+        p, q = c[k], c[(k + 1) % 4]
+        if side(a, b, p) * side(a, b, q) <= 0 and side(p, q, a) * side(p, q, b) <= 0:
+            return 0.0
+    return min([pt_seg(q, a, b) for q in c] + [math.hypot(max(x0 - p[0], 0, p[0] - x1), max(y0 - p[1], 0, p[1] - y1)) for p in (a, b)])
+
+
+def stroke_gap(r, a, b, half, caps):
+    """Distance from the box r to a stroke of half width half along ab. A butt end stops flush
+    at its end point, a round end reaches half the width past it."""
+    if not half or caps == ('round', 'round'):
+        return max(rect_seg(r, a, b) - half, 0.0)
+    L = math.hypot(b[0] - a[0], b[1] - a[1]) or 1.0
+    nx, ny = (a[1] - b[1]) / L * half, (b[0] - a[0]) / L * half
+    c = [(a[0] + nx, a[1] + ny), (b[0] + nx, b[1] + ny), (b[0] - nx, b[1] - ny), (a[0] - nx, a[1] - ny)]
+    gap = min(rect_seg(r, c[k], c[(k + 1) % 4]) for k in range(4))
+    for p, cap in zip((a, b), caps):
+        if cap == 'round':
+            gap = min(gap, max(math.hypot(max(r[0] - p[0], 0, p[0] - r[1]), max(r[2] - p[1], 0, p[1] - r[3])) - half, 0.0))
+    return gap
+
+
+def label_clearance(boxes, wires, caps, fig, dots):
+    """Closest distance from each label box to a wire, symbol, dot or other label (rules.md 24)."""
+    out = []
+    for i, (name, r) in enumerate(boxes):
+        near = [(stroke_gap(r, w[:2], w[2:], WIRE_W / 2, c), 'a wire') for w, c in zip(wires, caps)]
+        near += [(stroke_gap(r, a, b, half, (cap, cap)), 'a symbol') for a, b, half, cap in fig.strokes]
+        near += [(math.hypot(max(r[0] - cx, 0, cx - r[1]), max(r[2] - cy, 0, cy - r[3])) - rad, 'a symbol')
+                 for cx, cy, rad in fig.discs]
+        near += [(math.hypot(max(r[0] - x, 0, x - r[1]), max(r[2] - y, 0, y - r[3])) - DOT_D / 2, 'a dot') for x, y in dots]
+        near += [(math.hypot(max(r[0] - s[1], 0, s[0] - r[1]), max(r[2] - s[3], 0, s[2] - r[3])), 'label "%s"' % other)
+                 for j, (other, s) in enumerate(boxes) if j != i]
+        out.append((name,) + min(near) if near else (name, float('inf'), 'nothing'))
+    return out
 
 
 def on_segment(p, a, b, eps=0.01):
@@ -309,24 +474,52 @@ def main():
         sys.exit('tools/glyphs.json is missing. Run: python3 tools/make_glyphs.py')
     G = json.load(open(glyph_file))
     fig, problems = Fig(), []
+    rot = spec.get('rotate', 0)
+    if rot not in TURNS:
+        sys.exit('"rotate" must be 0, 90, 180 or 270, not %r' % (rot,))
+    T = TURNS[rot]
+    if rot:                                                   # the whole figure turns before anything is checked
+        wires = [list(T(w[0], w[1]) + T(w[2], w[3])) for w in spec['wires']]
+        dots = [T(x, y) for x, y in spec['dots']]
+        edge_ends = [T(x, y) for x, y in spec.get('edge_ends', [])]
+    else:
+        wires, dots, edge_ends = spec['wires'], spec['dots'], spec.get('edge_ends', [])
 
     # a diagonal wire is allowed only as half of a cross-coupling X: it must cross another diagonal
-    diagonals = [w for w in spec['wires'] if w[0] != w[2] and w[1] != w[3]]
+    diagonals = [w for w in wires if w[0] != w[2] and w[1] != w[3]]
     for d in diagonals:
         if not any(e is not d and crosses(d, e) for e in diagonals):
             problems.append('diagonal wire %s is not half of a cross-coupling X' % d)
+    supplies = []                                             # (symbol, pin, its own edges) of each GND and VDD
     for sym in spec['symbols']:
-        place_symbol(fig, sym, table)
-    for x, y in spec['dots']:
+        kind, n = sym['type'], len(fig.edges)
+        if kind in UPRIGHT:                                   # drawn upright, with its pin on the turned pin
+            px, py = supply_pin(sym, table)
+            pin = T(sym['left'] + px, sym['top'] + py)
+            place_symbol(fig, dict(sym, left=pin[0] - px, top=pin[1] - py) if rot else sym, table)
+            supplies.append((sym, pin, (n, len(fig.edges))))
+        elif not rot:
+            place_symbol(fig, sym, table)
+        elif (kind, sym.get('flip', False)) in PLUS:          # the source whose + points where the turned + points
+            w, h = table[kind][1:]
+            (ax, ay), (bx, by) = T(sym['left'], sym['top']), T(sym['left'] + w, sym['top'] + h)
+            kind2, flip2 = SOURCE_FOR[T(*PLUS[(kind, sym.get('flip', False))])]
+            place_symbol(fig, dict(sym, type=kind2, flip=flip2, left=min(ax, bx), top=min(ay, by)), table)
+        else:
+            if kind in TEXT_SYMBOLS:
+                problems.append('%s (%s) has signs, letters or a time axis inside and cannot be turned' % (sym.get('id', '?'), kind))
+            place_symbol(fig, sym, table, T)
+    for x, y in dots:
         fig.els.append('<circle cx="%s" cy="%s" r="%s" fill="#000000"/>' % (f(x), f(y), f(DOT_D / 2)))
         fig.extent(x, y, DOT_D / 2)
+    boxes = []
     for lab in spec.get('labels', []):
-        place_label(fig, lab, G)
+        boxes.append((''.join(text for text, kind in lab['runs']), place_label(fig, turn_label(lab, G, T) if rot else lab, G)))
     above, fig.els = fig.els, []                              # the caps need the symbols, but wires are drawn first
 
     # every wire end must sit on a symbol pin, on another wire or on a listed edge end outside the
     # figure, and gets its cap from what it touches
-    wires, edge_ends = spec['wires'], spec.get('edge_ends', [])
+    caps = []
     for i, (x1, y1, x2, y2) in enumerate(wires):
         for p in ((x1, y1), (x2, y2)):
             ok = any(math.hypot(p[0] - q[0], p[1] - q[1]) < 0.01 for q in fig.pins)
@@ -335,11 +528,29 @@ def main():
             ok = ok or any(math.hypot(p[0] - q[0], p[1] - q[1]) < 0.01 for q in edge_ends)
             if not ok:
                 problems.append('wire end %s is not on a pin or wire' % (tuple(round(v, 3) for v in p),))
-        place_wire(fig, wires[i], [end_cap(p, i, wires, fig, edge_ends) for p in ((x1, y1), (x2, y2))])
+        caps.append(tuple(end_cap(p, i, wires, fig, edge_ends) for p in ((x1, y1), (x2, y2))))
+        place_wire(fig, wires[i], list(caps[-1]))
     for q in edge_ends:
         if not any(math.hypot(q[0] - x, q[1] - y) < 0.01 for w in wires for x, y in (w[:2], w[2:])):
             problems.append('edge end %s is not the end of a wire' % (tuple(round(v, 3) for v in q),))
     fig.els += above
+
+    # an upright supply needs its lead from the side it expects: GND from above, VDD from below
+    for sym, p, (e0, e1) in supplies:
+        want = (0, -1) if UPRIGHT[sym['type']] == 'top' else (0, 1)
+        segs = [(w[:2], w[2:]) for w in wires] + [e for k, e in enumerate(fig.edges) if not e0 <= k < e1]
+        away = [(q[0] - p[0], q[1] - p[1]) for a, b in segs if on_segment(p, a, b) for q in (a, b)
+                if math.hypot(q[0] - p[0], q[1] - p[1]) > 0.01]
+        name = '%s %s at %s' % (sym['type'], sym.get('id', ''), tuple(round(v, 3) for v in p))
+        if not away:
+            problems.append('%s: no wire or lead reaches its pin' % name)
+        for v in away:
+            if abs(v[0]) > 0.01 or v[1] * want[1] <= 0:
+                problems.append('%s: its lead arrives from %s, but the upright symbol needs it from %s'
+                                % (name, side_name(v), side_name(want)))
+    # a layout script measures its labels in the unturned frame, so a turned figure has them checked here
+    clear = label_clearance(boxes, wires, caps, fig, dots) if rot else []
+    tight = ['label "%s" is %.2f pt from %s' % (n, d, what) for n, d, what in clear if d < CLEAR - 0.01]
 
     xs, ys = [p[0] for p in fig.pts], [p[1] for p in fig.pts]
     x0, y0 = min(xs) - MARGIN, min(ys) - MARGIN
@@ -354,7 +565,13 @@ def main():
     print('Size: %.2f x %.2f pt (insert at 100%%, never resize)' % (W, H))
     print('%d wires, %d symbols, %d dots, %d labels' % (len(wires), len(spec['symbols']), len(spec['dots']), len(spec.get('labels', []))))
     landed = 'pins, wires or listed edge ends' if edge_ends else 'pins or wires'
+    if rot:
+        print('Turned %d degrees clockwise' % rot)
     print('Checks: ' + ('all wire ends on ' + landed if not problems else '\n  ' + '\n  '.join(problems)))
+    if clear:
+        n, d, what = min(clear, key=lambda c: c[1])
+        print('Labels: ' + ('every label at least %g pt from wires, symbols, dots and labels (closest: "%s", %.2f pt from %s)'
+                            % (CLEAR, n, d, what) if not tight else '\n  ' + '\n  '.join(tight)))
 
 
 if __name__ == '__main__':

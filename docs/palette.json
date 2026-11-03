@@ -1,0 +1,1054 @@
+{
+ "name": "Palette",
+ "symbols": [
+  {
+   "id": "Capacitor",
+   "type": "Capacitor",
+   "left": 42.8,
+   "top": 30.875,
+   "flip": false
+  },
+  {
+   "id": "Resistor",
+   "type": "Resistor",
+   "left": 165.55,
+   "top": 32.825,
+   "flip": false
+  },
+  {
+   "id": "Inductor",
+   "type": "Inductor",
+   "left": 286.55,
+   "top": 36.85,
+   "flip": false
+  },
+  {
+   "id": "Crystal",
+   "type": "Crystal",
+   "left": 409.35,
+   "top": 19.925,
+   "flip": false
+  },
+  {
+   "id": "Box-X",
+   "type": "Box-X",
+   "left": 513.8,
+   "top": 25.075,
+   "flip": false
+  },
+  {
+   "id": "Switch",
+   "type": "Switch",
+   "left": 651.0,
+   "top": 28.675,
+   "flip": false
+  },
+  {
+   "id": "Diode",
+   "type": "Diode",
+   "left": 779.48,
+   "top": 17.165,
+   "flip": false
+  },
+  {
+   "id": "Diode H",
+   "type": "Diode H",
+   "left": 37.04,
+   "top": 149.1167,
+   "flip": false
+  },
+  {
+   "id": "Current Source",
+   "type": "Current Source",
+   "left": 165.43,
+   "top": 145.0667,
+   "flip": false
+  },
+  {
+   "id": "Voltage Source",
+   "type": "Voltage Source",
+   "left": 287.43,
+   "top": 145.0667,
+   "flip": false
+  },
+  {
+   "id": "Voltage Source H",
+   "type": "Voltage Source H",
+   "left": 409.43,
+   "top": 145.0667,
+   "flip": false
+  },
+  {
+   "id": "Voltage Source Inv",
+   "type": "Voltage Source Inv",
+   "left": 531.43,
+   "top": 145.0667,
+   "flip": false
+  },
+  {
+   "id": "Current Arrow",
+   "type": "Current Arrow",
+   "left": 663.95,
+   "top": 149.6367,
+   "flip": false
+  },
+  {
+   "id": "Current Arrow H",
+   "type": "Current Arrow H",
+   "left": 780.0,
+   "top": 155.5867,
+   "flip": false
+  },
+  {
+   "id": "VDD",
+   "type": "VDD",
+   "left": 49.55,
+   "top": 275.7984,
+   "flip": false
+  },
+  {
+   "id": "GND",
+   "type": "GND",
+   "left": 175.6,
+   "top": 276.8484,
+   "flip": false
+  },
+  {
+   "id": "PAD",
+   "type": "PAD",
+   "left": 294.25,
+   "top": 273.3984,
+   "flip": false
+  },
+  {
+   "id": "Voltage Node",
+   "type": "Voltage Node",
+   "left": 420.7,
+   "top": 277.8484,
+   "flip": false
+  },
+  {
+   "id": "Line",
+   "type": "Line",
+   "left": 536.1,
+   "top": 281.8984,
+   "flip": false
+  },
+  {
+   "id": "NMOS",
+   "type": "NMOS",
+   "left": 651.3,
+   "top": 255.8484,
+   "flip": false
+  },
+  {
+   "id": "PMOS",
+   "type": "PMOS",
+   "left": 773.31,
+   "top": 255.8684,
+   "flip": false
+  },
+  {
+   "id": "NMOS HV",
+   "type": "NMOS HV",
+   "left": 41.3,
+   "top": 377.3602,
+   "flip": false
+  },
+  {
+   "id": "PMOS HV",
+   "type": "PMOS HV",
+   "left": 163.31,
+   "top": 377.3802,
+   "flip": false
+  },
+  {
+   "id": "NMOS Thick",
+   "type": "NMOS Thick",
+   "left": 285.3,
+   "top": 377.3602,
+   "flip": false
+  },
+  {
+   "id": "PMOS Thick",
+   "type": "PMOS Thick",
+   "left": 407.31,
+   "top": 377.3802,
+   "flip": false
+  },
+  {
+   "id": "NMOS B-S",
+   "type": "NMOS B-S",
+   "left": 524.05,
+   "top": 375.6602,
+   "flip": false
+  },
+  {
+   "id": "PMOS B-S",
+   "type": "PMOS B-S",
+   "left": 647.525,
+   "top": 377.3802,
+   "flip": false
+  },
+  {
+   "id": "NMOS Diode",
+   "type": "NMOS Diode",
+   "left": 764.9,
+   "top": 369.7102,
+   "flip": false
+  },
+  {
+   "id": "PMOS Diode",
+   "type": "PMOS Diode",
+   "left": 32.925,
+   "top": 491.2269,
+   "flip": false
+  },
+  {
+   "id": "NPN",
+   "type": "NPN",
+   "left": 162.0,
+   "top": 500.4719,
+   "flip": false
+  },
+  {
+   "id": "PNP",
+   "type": "PNP",
+   "left": 283.995,
+   "top": 500.4919,
+   "flip": false
+  },
+  {
+   "id": "Amp",
+   "type": "Amp",
+   "left": 390.74,
+   "top": 498.3469,
+   "flip": false
+  },
+  {
+   "id": "Comp",
+   "type": "Comp",
+   "left": 518.05,
+   "top": 498.3219,
+   "flip": false
+  },
+  {
+   "id": "FD OpAm",
+   "type": "FD OpAm",
+   "left": 633.3,
+   "top": 494.0219,
+   "flip": false
+  },
+  {
+   "id": "Buffer",
+   "type": "Buffer",
+   "left": 764.905,
+   "top": 506.5169,
+   "flip": false
+  },
+  {
+   "id": "Inverter",
+   "type": "Inverter",
+   "left": 33.74,
+   "top": 630.4886,
+   "flip": false
+  },
+  {
+   "id": "Inverter Small",
+   "type": "Inverter Small",
+   "left": 161.905,
+   "top": 634.9036,
+   "flip": false
+  },
+  {
+   "id": "AND",
+   "type": "AND",
+   "left": 280.06,
+   "top": 630.1486,
+   "flip": false
+  },
+  {
+   "id": "NAND",
+   "type": "NAND",
+   "left": 397.545,
+   "top": 630.1486,
+   "flip": false
+  },
+  {
+   "id": "OR",
+   "type": "OR",
+   "left": 521.85,
+   "top": 630.1486,
+   "flip": false
+  },
+  {
+   "id": "NOR",
+   "type": "NOR",
+   "left": 639.415,
+   "top": 630.1486,
+   "flip": false
+  },
+  {
+   "id": "XOR",
+   "type": "XOR",
+   "left": 762.99,
+   "top": 630.1486,
+   "flip": false
+  },
+  {
+   "id": "Mux",
+   "type": "Mux",
+   "left": 43.235,
+   "top": 739.9353,
+   "flip": false
+  },
+  {
+   "id": "DFF",
+   "type": "DFF",
+   "left": 157.345,
+   "top": 746.2303,
+   "flip": false
+  },
+  {
+   "id": "DFF QB",
+   "type": "DFF QB",
+   "left": 275.435,
+   "top": 744.6703,
+   "flip": false
+  },
+  {
+   "id": "Ring Oscillator",
+   "type": "Ring Oscillator",
+   "left": 383.855,
+   "top": 729.0703,
+   "flip": false
+  },
+  {
+   "id": "Sum",
+   "type": "Sum",
+   "left": 515.125,
+   "top": 742.5803,
+   "flip": false
+  },
+  {
+   "id": "Pure-Sine",
+   "type": "Pure-Sine",
+   "left": 647.85,
+   "top": 737.7953,
+   "flip": false
+  },
+  {
+   "id": "Pseudo-Sine",
+   "type": "Pseudo-Sine",
+   "left": 764.05,
+   "top": 729.6953,
+   "flip": false
+  },
+  {
+   "id": "Clock",
+   "type": "Clock",
+   "left": 37.85,
+   "top": 874.907,
+   "flip": false
+  },
+  {
+   "id": "Noise",
+   "type": "Noise",
+   "left": 136.08,
+   "top": 866.442,
+   "flip": false
+  },
+  {
+   "id": "ECG",
+   "type": "ECG",
+   "left": 264.315,
+   "top": 853.502,
+   "flip": false
+  },
+  {
+   "id": "APW",
+   "type": "APW",
+   "left": 386.315,
+   "top": 855.927,
+   "flip": false
+  },
+  {
+   "id": "Non-Overlap",
+   "type": "Non-Overlap",
+   "left": 529.33,
+   "top": 873.967,
+   "flip": false
+  },
+  {
+   "id": "Light",
+   "type": "Light",
+   "left": 652.235,
+   "top": 877.547,
+   "flip": false
+  }
+ ],
+ "wires": [],
+ "dots": [],
+ "labels": [
+  {
+   "runs": [
+    [
+     "Capacitor",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 38.3096,
+   "y": 91.339,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Resistor",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 163.3154,
+   "y": 91.1925,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Inductor",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 285.3213,
+   "y": 91.1925,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Crystal",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 410.3213,
+   "y": 91.339,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Box-X",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 534.7881,
+   "y": 91.1925,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Switch",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 655.1416,
+   "y": 91.339,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Diode",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 779.333,
+   "y": 91.1925,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Diode H",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 42.4141,
+   "y": 212.7042,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Current Source",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 147.1904,
+   "y": 212.8507,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Voltage Source",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 269.1816,
+   "y": 212.8507,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Voltage Source H",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 386.2627,
+   "y": 212.8507,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Voltage Source Inv",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 504.7031,
+   "y": 212.8507,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Current Arrow",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 637.6572,
+   "y": 212.8507,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Current Arrow H",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 754.7383,
+   "y": 212.8507,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "VDD",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 50.6172,
+   "y": 334.2159,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "GND",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 172.0693,
+   "y": 334.3624,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "PAD",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 294.6172,
+   "y": 334.2159,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Voltage Node",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 395.5615,
+   "y": 334.2159,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Line",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 538.8838,
+   "y": 334.2159,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "NMOS",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 656.2402,
+   "y": 334.3624,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "PMOS",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 778.5098,
+   "y": 334.3624,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "NMOS HV",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 38.04,
+   "y": 455.8741,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "PMOS HV",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 160.3096,
+   "y": 455.8741,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "NMOS Thick",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 276.0195,
+   "y": 455.8741,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "PMOS Thick",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 398.2891,
+   "y": 455.8741,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "NMOS B-S",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 524.4023,
+   "y": 455.8741,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "PMOS B-S",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 646.6719,
+   "y": 455.8741,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "NMOS Diode",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 763.2051,
+   "y": 455.8741,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "PMOS Diode",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 31.4746,
+   "y": 577.3858,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "NPN",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 172.6172,
+   "y": 577.2394,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "PNP",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 294.8867,
+   "y": 577.2394,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Amp",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 416.0693,
+   "y": 577.2394,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Comp",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 535.0635,
+   "y": 577.3858,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "FD OpAm",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 648.3154,
+   "y": 577.3858,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Buffer",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 778.5186,
+   "y": 577.3858,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Inverter",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 42.9531,
+   "y": 698.7511,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Inverter Small",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 150.457,
+   "y": 698.8976,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "AND",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 294.3477,
+   "y": 698.7511,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "NAND",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 412.7969,
+   "y": 698.7511,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "OR",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 541.6201,
+   "y": 698.8976,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "NOR",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 660.0693,
+   "y": 698.8976,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "XOR",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 782.3389,
+   "y": 698.8976,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Mux",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 51.1592,
+   "y": 820.2628,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "DFF",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 173.4375,
+   "y": 820.2628,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "DFF QB",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 286.6895,
+   "y": 820.4093,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Ring Oscillator",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 392.002,
+   "y": 820.4093,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Sum",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 538.3389,
+   "y": 820.4093,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Pure-Sine",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 648.0342,
+   "y": 820.4093,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Pseudo-Sine",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 763.1992,
+   "y": 820.4093,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Clock",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 47.6025,
+   "y": 941.921,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Noise",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 169.6025,
+   "y": 941.7745,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "ECG",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 294.3389,
+   "y": 941.921,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "APW",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 415.5244,
+   "y": 941.7745,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Non-Overlap",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 519.4746,
+   "y": 941.921,
+   "align": "left"
+  },
+  {
+   "runs": [
+    [
+     "Light",
+     "sub"
+    ]
+   ],
+   "size": 18.0,
+   "x": 658.9766,
+   "y": 941.7745,
+   "align": "left"
+  }
+ ]
+}

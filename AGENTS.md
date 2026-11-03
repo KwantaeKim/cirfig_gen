@@ -98,8 +98,13 @@ the font size to 10 × W/4 pt so that the slide shows the same sizes.
 
 ## Quality control
 
-The renderer only checks that wire ends land on pins or wires. Everything else is on you.
+The renderer checks that wire ends land on pins or wires and that every GND and VDD lead
+arrives from the side the upright symbol expects. In a turned figure it also checks the label
+clearance. Everything else is on you.
 
+- One circuit is one picture. It goes into a deck at 100 %, never scaled and never rotated in
+  PowerPoint. A figure that must lie in another orientation gets it from `"rotate"` in its
+  JSON. Supply symbols are never added as separate pictures.
 - Netlist first. Before placing anything, write the netlist in your reply: every device with
   its gate, drain and source nets, every terminal, and the input polarity. Build the wires from
   it. After rendering, read the preview back against the netlist device by device. Nothing
@@ -111,10 +116,11 @@ The renderer only checks that wire ends land on pins or wires. Everything else i
   one, and never patch a coordinate in it. Fix the JSON and render again.
 - Dots: one exactly where three or more wires or pins meet, and nowhere else. Count them in
   the preview and make sure none sits on a crossing or a bend.
-- Labels: the renderer does not check overlaps. Compute each label's width the way
-  `render.py` does (the glyphs' `adv` × size / upm from `tools/glyphs.json`), have the script
-  print the label boxes, and keep 3 pt between each box and every wire, symbol and other
-  label.
+- Labels: in an unturned figure the renderer does not check overlaps. Compute each label's
+  width the way `render.py` does (the glyphs' `adv` × size / upm from `tools/glyphs.json`),
+  have the script print the label boxes, and keep 3 pt between each box and every wire,
+  symbol and other label. In a turned figure the script cannot see the final boxes, so the
+  renderer measures them on the turned geometry and lists every label closer than 3 pt.
 - Supplies and tails follow rules 8 and 14 exactly: VDD directly on the pin, GND on a 13.5 pt
   wire, and one horizontal tail wire that ends on both source pins.
 - Match `references/`. Before a new layout, open the closest figure there and reuse its
@@ -151,6 +157,53 @@ The renderer only checks that wire ends land on pins or wires. Everything else i
   upright subscripts. Use "−" (U+2212) for minus.
 - The frame is arbitrary. The renderer adds the 3 pt margin.
 - Generated figures go in `output/`.
+
+### Turning a figure
+
+Optional `"rotate": 90` at the top level turns the finished figure clockwise by 90, 180 or
+270 degrees about the origin. The default is 0, and a figure without the key renders exactly
+as before. Every coordinate in the JSON stays in the unturned frame. The renderer turns the
+geometry, runs every check on the turned figure and fits the viewBox to it. The SVG is the
+turned figure and goes into the deck unturned at 100 %. Turning the whole figure keeps every
+drain and source in place, so it does not break rule 6, which is about one symbol.
+
+- Wires, dots, edge ends, transistors and other device bodies turn with the figure. A Voltage
+  Node turns too. It is a ring, so only its position changes. A Current Arrow turns, because
+  the current turns with the circuit.
+- GND and VDD stay upright. Give each one's `left` and `top` as if it were upright in
+  the unturned frame, with its pin on the wire end or lead. The renderer turns the pin and
+  draws the symbol upright about it. The lead must reach the pin from the side the upright
+  symbol expects: from above for GND, from below for VDD. The renderer reports
+  any supply whose lead arrives from another side and never draws a supply sideways. In the
+  unturned frame, the lead leaves a GND pin in this direction:
+
+  | rotate | GND lead leaves its pin toward | VDD lead leaves its pin toward |
+  |--------|--------------------------------|--------------------------------|
+  | 90     | −x                             | +x                             |
+  | 180    | +y                             | −y                             |
+  | 270    | +x                             | −x                             |
+
+  Rule 8 still holds in the turned figure: a GND hangs on a 13.5 pt wire below its pin, so a
+  lead that turns sideways reaches its GND through a wire that bends once.
+- Voltage Source, Voltage Source H and Voltage Source Inv are swapped for the variant whose +
+  sign lies where the turned + lies. The signs stay upright, and the three share one box and
+  one set of pins.
+- Amp, Comp, FD OpAm, Sum, DFF, DFF QB and the waveform symbols (Clock, Pure-Sine,
+  Pseudo-Sine, Noise, ECG, APW, Non-Overlap) carry signs, letters or a time axis. They cannot
+  be turned, and the renderer reports them.
+- Labels stay upright text. The anchor at `x`, `y` turns with the figure, and the side of the
+  label that faced the anchor keeps facing it:
+
+  | rotate | `"align": "left"`                 | `"align": "right"`                |
+  |--------|-----------------------------------|-----------------------------------|
+  | 90     | hangs below the anchor            | stands above the anchor           |
+  | 180    | becomes `"right"`                 | becomes `"left"`                  |
+  | 270    | stands above the anchor           | hangs below the anchor            |
+
+  A label below or above its anchor is centred on it across, and its glyph outline ends on
+  the anchor. A device label 3 pt to the right of a lead therefore ends up 3 pt below the lead
+  after a 90 degree turn. Its box spans the advance widths across, as in the layout script,
+  and the glyph outlines from top to bottom.
 
 ## Common pins
 

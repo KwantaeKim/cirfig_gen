@@ -257,7 +257,7 @@ exactly.
 
 The shared look:
 
-- Arial Narrow bold axis labels, with engineering tick labels (µ, m, k, M) through
+- Arial Narrow bold axis labels, with engineering tick labels (μ, m, k, M) through
   `EngFormatter`.
 - Navy, red `#C80000` and black lines, 0.7 pt for measured or simulated data and 1 to 1.5 pt
   for a theory curve.

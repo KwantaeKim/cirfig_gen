@@ -57,6 +57,36 @@ saved as PNG at 300 dpi with `bbox_inches="tight"`. No title on a plot, and no t
 caption sentence on it: the slide carries the title. Every script runs on its own with
 `--out fig.png` and reads its data from its own folder.
 
+These points hold for every new plot, also where an older reference does otherwise:
+
+- Math text uses the plot font. In `apply_style`, set `mathtext.fontset = "custom"`, with
+  `mathtext.rm`, `mathtext.it` and `mathtext.bf` set to Arial Narrow bold, bold italic and
+  bold.
+- Symbols are italic and subscripts upright, for example $N_\mathrm{D}$ and $x$. Units in
+  parentheses stay upright.
+- Greek μ is U+03BC. Write "μm", never the micro sign U+00B5.
+- No tick marks: `tick_params(which="both", length=0)`.
+- Axis titles sit close to the axes: `labelpad = 1` on both axes.
+- The frame is in front of the curves. Set every spine to `zorder 5`, so a curve never
+  covers the frame.
+- Transparent background: save with `transparent=True`.
+- A family of curves is one hue in shades, from light to dark along the parameter, with navy
+  `#0000C8` at the top value. Each label takes its curve's colour. Red stays reserved for
+  problems and negatives.
+- A curve label never crosses a curve or the frame. Put each label in a gap next to its
+  curve, on a white rounded box, split over two lines if needed.
+- Size follows the slide space. Choose the figure width W for the area and state the paste
+  width, 4 × W cm. After a re-render that moves the frame within the image, place the
+  picture again so that the frame stays put on the slide.
+
+Redrawing a figure from a book:
+
+- Trace the curves from a 300 dpi crop, calibrated on the figure's frame. Keep the trace
+  script and the TSV data next to the plot script, with the source and page.
+- Render with the plot frame at the book's aspect ratio.
+- Check the redraw by laying it over the book figure with the frames aligned. Remove the
+  book figure only after the user confirms the match.
+
 The references are examples of style, not a catalogue of allowed plots. A slide on any
 topic can get a plot: an SRAM read margin against supply, a PLL phase-noise spectrum, an
 LDO load-transient waveform, a mirror's output current against output voltage. Compute the

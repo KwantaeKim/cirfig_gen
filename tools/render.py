@@ -253,9 +253,15 @@ def place_symbol(fig, sym, table, turn=None):
     svg = open(os.path.join(ROOT, 'palette', fname), encoding='utf8').read()
     vx, vy, vw, vh = (float(v) for v in re.search(r'viewBox="([-\d.]+) ([-\d.]+) ([\d.]+) ([\d.]+)"', svg).groups())
     sx, sy = w / vw, h / vh
-    L, T, flip = sym['left'], sym['top'], sym.get('flip', False)
+    L, T, flip, rot = sym['left'], sym['top'], sym.get('flip', False), sym.get('rot', 0)
     X = lambda px: L + w - (px - vx) * sx if flip else L + (px - vx) * sx
     Y = lambda py: T + (py - vy) * sy
+    # "rot": 90 turns this one symbol a quarter turn clockwise about the centre of its unturned frame (left, top, w, h),
+    # for a figure whose transistors lie along a cross-section; the rules forbid this for an ordinary schematic
+    assert rot in (0, 90), rot
+    if rot:
+        cx0, cy0, outer = L + w / 2, T + h / 2, turn
+        turn = lambda x, y: (outer or (lambda a, b: (a, b)))(cx0 - (y - cy0), cy0 + (x - cx0))
     P = (lambda px, py: (X(px), Y(py))) if turn is None else (lambda px, py: turn(X(px), Y(py)))
     for m in re.finditer(r'<(path|circle|rect)\b([^>]*)/?>', svg):
         kind, a = m.groups()
@@ -555,7 +561,13 @@ def main():
     xs, ys = [p[0] for p in fig.pts], [p[1] for p in fig.pts]
     x0, y0 = min(xs) - MARGIN, min(ys) - MARGIN
     W, H = max(xs) + MARGIN - x0, max(ys) + MARGIN - y0
-    out = os.path.splitext(spec_path)[0] + '.svg'
+    if 'frame' in spec:
+        # pictures that must align pixel-exactly in PowerPoint share one frame [x, y, w, h], which is the viewBox as is
+        fx, fy, fw, fh = spec['frame']
+        if x0 < fx - 0.001 or y0 < fy - 0.001 or x0 + W > fx + fw + 0.001 or y0 + H > fy + fh + 0.001:
+            problems.append('content %s exceeds the frame %s' % ((round(x0, 3), round(y0, 3), round(W, 3), round(H, 3)), spec['frame']))
+        x0, y0, W, H = fx, fy, fw, fh
+    out =os.path.splitext(spec_path)[0] + '.svg'
     with open(out, 'w', encoding='utf8') as o:
         o.write('<svg xmlns="http://www.w3.org/2000/svg" width="%spt" height="%spt" viewBox="%s %s %s %s">\n'
                 % (f(W), f(H), f(x0), f(y0), f(W), f(H)))

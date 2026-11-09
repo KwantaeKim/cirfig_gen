@@ -2,3 +2,6 @@
 tools/glyphs.json
 
 .DS_Store
+
+# Local renders
+output/

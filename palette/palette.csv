@@ -15,6 +15,7 @@ Current Arrow,Current Arrow.svg,14.10,26.00,1.0000,3.00,head 12.00 long 8.10 wid
 Current Arrow H,Current Arrow H.svg,26.00,14.10,1.0000,3.00,head 12.00 long 8.10 wide
 VDD,VDD.svg,22.90,16.70,0.6012,3.01,bar 3.61
 GND,GND.svg,14.80,14.60,0.5989,2.99,
+GND Inv,GND Inv.svg,14.80,14.60,0.5989,2.99,
 PAD,PAD.svg,21.50,21.50,0.7497,3.00,
 Voltage Node,Voltage Node.svg,12.60,12.60,0.7491,3.00,
 Line,Wire.svg,25.80,4.50,0.7511,3.00,

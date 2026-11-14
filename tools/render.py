@@ -61,7 +61,7 @@ PLUS = {('Voltage Source', False): (0, -1), ('Voltage Source', True): (0, -1),
         ('Voltage Source H', False): (-1, 0), ('Voltage Source H', True): (1, 0)}   # where the + sign sits
 SOURCE_FOR = {(0, -1): ('Voltage Source', False), (0, 1): ('Voltage Source Inv', False),
               (-1, 0): ('Voltage Source H', False), (1, 0): ('Voltage Source H', True)}
-TEXT_SYMBOLS = {'Amp', 'Comp', 'FD OpAm', 'Sum', 'DFF', 'DFF QB', 'Clock', 'Pure-Sine', 'Pseudo-Sine',
+TEXT_SYMBOLS = {'Amp', 'Gm', 'Comp', 'FD OpAm', 'Sum', 'DFF', 'DFF QB', 'Clock', 'Pure-Sine', 'Pseudo-Sine',
                 'Noise', 'ECG', 'APW', 'Non-Overlap'}
 
 

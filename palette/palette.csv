@@ -32,6 +32,7 @@ PMOS Diode,PMOS Diode.svg,56.15,71.89,0.7500,3.00,thin line 1.69
 NPN,NPN.svg,42.00,53.40,1.3329,3.00,
 PNP,PNP.svg,42.01,53.36,1.3332,3.00,
 Amp,Amp.svg,72.52,57.65,0.7499,3.00,
+Gm,Gm.svg,41.20,76.40,1.0000,3.00,signs 2.17
 Comp,Comp.svg,61.90,57.70,0.7499,3.00,
 FD OpAm,FD OpAm.svg,75.40,66.30,0.7504,3.00,
 Buffer,Buffer.svg,56.19,41.31,1.3334,3.00,

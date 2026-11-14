@@ -218,7 +218,7 @@ drain and source in place, so it does not break rule 6, which is about one symbo
 - Voltage Source, Voltage Source H and Voltage Source Inv are swapped for the variant whose +
   sign lies where the turned + lies. The signs stay upright, and the three share one box and
   one set of pins.
-- Amp, Comp, FD OpAm, Sum, DFF, DFF QB and the waveform symbols (Clock, Pure-Sine,
+- Amp, Gm, Comp, FD OpAm, Sum, DFF, DFF QB and the waveform symbols (Clock, Pure-Sine,
   Pseudo-Sine, Noise, ECG, APW, Non-Overlap) carry signs, letters or a time axis. They cannot
   be turned, and the renderer reports them.
 - Labels stay upright text. The anchor at `x`, `y` turns with the figure, and the side of the
@@ -253,9 +253,10 @@ x' = width − x.
 | Current Arrow H | 26.00 × 14.10 | no pins. The same arrow pointing right; flip it to point left |
 | NPN            | 42.00 × 53.40  | base (3.999, 26.700), collector top (38.001, 4.003), emitter bottom (38.001, 49.397) |
 | PNP            | 42.01 × 53.36  | base (3.999, 26.671), emitter top (38.010, 4.000), collector bottom (38.010, 49.344) |
+| Gm             | 41.20 × 76.40  | in+ (3.000, 23.000), in− (3.000, 53.400), sink (38.200, 23.000), source (38.200, 53.400), each on the trapezoid's edge. The transconductor: + and − at the inputs, − and + at the outputs, drawn as the Sum symbol's signs (2.17 pt, butt ends). Write g_m inside as a figure label |
 | VDD            | 22.90 × 16.70  | pin (11.447, 14.905), the bottom of the stem |
 | GND            | 14.80 × 14.60  | pin (7.400, 1.799), the middle of the top bar |
-| Voltage Node   | 12.60 × 12.60  | centre (6.300, 6.300). A wire ends on the ring's centre line, 4.053 from the centre. The ring's outer edge is 5.551 from the centre. |
+| Voltage Node   | 12.60 × 12.60  | centre (6.300, 6.300). A wire ends on the ring's centre line, 3.242 from the centre. The ring's outer edge is 4.742 from the centre. |
 
 NMOS and PMOS gates are on the left and the drain/source leads on the right. Flip a
 transistor to put its gate on the right. The PMOS gate pin is the left edge of its bubble.

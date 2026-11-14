@@ -153,6 +153,10 @@ clearance. Everything else is on you.
   renderer measures them on the turned geometry and lists every label closer than 3 pt.
 - Supplies and tails follow rules 8 and 14 exactly: VDD directly on the pin, GND on a 13.5 pt
   wire, and one horizontal tail wire that ends on both source pins.
+- Placement follows rules 25 to 28: a Norton resistor straight under its current source, a
+  device between the output row and GND centred with 13.5 pt wires above and below, figures
+  shown together on one output row, one GND level and one shared vertical `"frame"`, and a
+  Current Arrow beside the device body when the lead is too short for it.
 - Match `references/`. Before a new layout, open the closest figure there and reuse its
   spacings: device pitch, wire length between stacked devices, label gaps. Figures that go
   into one deck share the same spacings.

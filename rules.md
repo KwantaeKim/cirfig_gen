@@ -82,3 +82,15 @@ Every circuit figure must follow these rules. Positions and sizes are in points 
 23. Signal labels (VIN+, VOUT, IREF, …) go beside their terminal on the outer side, vertically
     centred on the wire, with a 3 pt gap between the label and the terminal.
 24. A label never overlaps a wire, dot, symbol or another label.
+
+## Placement
+
+25. A resistor in parallel with a current source (a Norton equivalent) sits straight under the
+    source, in the same column. The node between them is a junction, and the output wire runs
+    from it to the terminal.
+26. A source or resistor standing between the output row and GND sits in the middle of that
+    height, with an equal wire above and below it (13.5 pt each, as the GND wire of rule 8).
+27. Circuits shown side by side or on consecutive slides share the output row and the GND
+    level. Their figures share one vertical frame, so they line up when placed at the same y.
+28. When a lead is too short for a Current Arrow and its 3 pt gaps, the arrow goes beside the
+    device body, with its label on the outer side of the arrow.

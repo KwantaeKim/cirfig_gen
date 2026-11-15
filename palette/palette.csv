@@ -1,6 +1,7 @@
 name,file,width_pt,height_pt,scale,line_pt,other_lines_pt
 Capacitor,Capacitor.svg,36.40,20.50,0.7502,3.00,plates 4.50
 Resistor,Resistor.svg,34.90,16.60,0.7507,3.00,
+Resistor S,Resistor S.svg,19.20,9.15,0.4130,3.00,
 Inductor,Inductor.svg,36.90,8.55,0.7500,3.00,
 Crystal,Crystal.svg,35.30,42.40,0.7495,3.00,
 Box-X,Chopper.svg,70.40,32.10,0.7500,3.00,
@@ -8,6 +9,7 @@ Switch,Switch.svg,40.00,24.90,0.7492,3.00,
 Diode,Diode.svg,27.04,47.92,1.3333,3.00,triangle outline 1.00
 Diode H,Diode H.svg,47.92,27.04,1.3333,3.00,triangle outline 1.00
 Current Source,Current Source.svg,35.14,35.14,0.7499,3.00,
+Current Source Inv,Current Source Inv.svg,35.14,35.14,0.7499,3.00,
 Voltage Source,Voltage Source.svg,35.14,35.14,0.7499,3.00,signs 2.17
 Voltage Source H,Voltage Source H.svg,35.14,35.14,0.7499,3.00,signs 2.17
 Voltage Source Inv,Voltage Source Inv.svg,35.14,35.14,0.7499,3.00,signs 2.17

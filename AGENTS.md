@@ -167,6 +167,36 @@ clearance. Everything else is on you.
   `output/build/` for the scripts. Delete crops, `.svg.png` duplicates, QA iterations and
   any fallback drawings before reporting.
 
+## Transitions: no fade-out followed by a fade-in
+
+A line that fades out and then fades back in is useless animation. A fade-out alone or a fade-in alone
+is fine. After every build or patch of a deck, and before handing it over, run
+`/opt/anaconda3/bin/python3 tools/morph_check.py <deck.pptx> [N ...]` and fix every flag it reports.
+It only reads the deck. Its docstring lists the checks and the model of Morph behind them.
+
+- Fix a flag on slide N or later slides. Never edit slide N−1.
+- A figure that changes between Morph slides keeps the earlier slide's exact picture (same name, same
+  image bytes) on the later slide. Draw what the later slide adds as a separate layer on top, rendered in
+  the same coordinates, and let it fade in. Remove parts by fading the earlier picture out over a twin
+  without those parts. Never give a picture the same name with another image.
+- A figure element that moves between slides breaks this. Keep it at the earlier slide's place, or make
+  it a picture of its own.
+- An object the earlier slide shows by an entrance effect cannot be held still by Morph. Plan the
+  later slide around it (for example a Fade transition with every shared picture at the same spot).
+
+## Slides: one way to explain a figure
+
+cirfig_gen draws figures. It does not decide how a slide teaches with them. The pattern
+below is one method that worked well. Use it when it suits the slide, not as a requirement.
+
+- Derive the claim as a short chain of cause and effect lines, one per click, joined by
+  down arrows. Each line is a plain statement with its symbol in brackets.
+- The last line points with an arrow to the equation it explains, at the place where an
+  earlier slide stated that equation.
+- A term for the idea follows the chain and names what was just shown.
+- When a slide compares two circuits, it can argue one side and keep only the circuit on
+  the other.
+
 ## Layout JSON
 
 ```json
@@ -249,9 +279,11 @@ x' = width − x.
 | NMOS           | 39.40 × 56.60  | gate (2.251, 28.296), drain (37.149, 2.252), source (37.149, 54.348) |
 | PMOS           | 39.38 × 56.56  | gate (2.250, 28.209), source (37.130, 2.250), drain (37.130, 54.310) |
 | Current Source | 35.14 × 35.14  | top (17.570, 2.250), bottom (17.570, 32.890) |
+| Current Source Inv | 35.14 × 35.14 | top (17.570, 2.250), bottom (17.570, 32.890). The Current Source with its arrow pointing up, since symbols cannot be flipped vertically |
 | Voltage Source | 35.14 × 35.14  | + top (17.570, 2.250), − bottom (17.570, 32.890). DC source, + on top |
 | Voltage Source H | 35.14 × 35.14 | + left (2.250, 17.570), − right (32.890, 17.570). The same source lying down; flip it to put + on the right |
 | Voltage Source Inv | 35.14 × 35.14 | − top (17.570, 2.250), + bottom (17.570, 32.890). The upright source with − on top, since symbols cannot be flipped vertically |
+| Resistor S     | 19.20 × 9.15   | left (1.239, 4.539), right (17.961, 4.576). The Resistor at 55 % with the same 3 pt line, for a small device resistance such as r_o beside a cell. Turn it with "rot": 90 |
 | Diode H        | 47.92 × 27.04  | anode left (4.000, 13.533), cathode right (43.920, 13.533). The Diode lying down, pointing right. Flip it to point left |
 | Current Arrow  | 14.10 × 26.00  | no pins. A free-standing arrow pointing down (3 pt shaft, filled head as on the Summer), placed beside a wire with a 3 pt gap to mark a current direction. It is never part of a wire |
 | Current Arrow H | 26.00 × 14.10 | no pins. The same arrow pointing right; flip it to point left |
